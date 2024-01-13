@@ -8,42 +8,6 @@ namespace {
 
 namespace po = boost::program_options;
 
-inline auto makeDataSet(auto function, auto minInput, auto maxInput,
-                        auto numberOfSamples) {
-  auto ds{std::make_shared<opennn::DataSet>(numberOfSamples, 2)};
-  for (auto i = 0; i < numberOfSamples; i++) {
-    auto x{minInput + i * (maxInput - minInput) / numberOfSamples};
-    ds->get_data_pointer()->operator()(i, 0) = x;
-    ds->get_data_pointer()->operator()(i, 1) = function(x);
-  }
-  return ds;
-}
-
-inline auto generateDataSetFiles(auto path) {
-  auto cos{makeDataSet([](auto x) { return std::cos(x); }, -6.f, 6.f, 100)};
-  cos->set_data_file_name(path + "/cosine.csv");
-  cos->set_column_name(0, "x");
-  cos->set_column_name(1, "cos(x)");
-  cos->save_data();
-  auto sqrt{makeDataSet([](auto x) { return std::sqrt(x); }, 0.f, 2.f, 100)};
-  sqrt->set_data_file_name(path + "/sqrt.csv");
-  sqrt->set_column_name(0, "x");
-  sqrt->set_column_name(1, "x^-2");
-  sqrt->save_data();
-  auto sqr{
-      makeDataSet([](auto x) { return std::pow(x, 2.f); }, -2.f, 2.f, 100)};
-  sqr->set_data_file_name(path + "/sqr.csv");
-  sqr->set_column_name(0, "x");
-  sqr->set_column_name(1, "x^2");
-  sqr->save_data();
-  auto cube{
-      makeDataSet([](auto x) { return std::pow(x, 3.f); }, -2.f, 2.f, 100)};
-  cube->set_data_file_name(path + "/cube.csv");
-  cube->set_column_name(0, "x");
-  cube->set_column_name(1, "x^3");
-  cube->save_data();
-}
-
 inline auto makeNeuralNetwork(auto numberOfInputs, auto numberOfOutputs,
                               auto layersInfo) {
   opennn::NeuralNetwork network;
@@ -136,24 +100,13 @@ int main(int ac, char* av[]) {
       "* layers=...")("data-set, d", po::value<string>(),
                       "set data set file path.")(
       "output, o", po::value<string>(), "set output files path.");
-  po::options_description hiddenOpt{"Hidden options"};
-  hiddenOpt.add_options()("generate", po::value<string>(),
-                          "generate data-sets [DEST]");
 
-  po::options_description cmdLineOpt;
-  cmdLineOpt.add(hiddenOpt).add(visibleOpt);
   po::variables_map vm;
-  po::store(po::parse_command_line(ac, av, cmdLineOpt), vm);
+  po::store(po::parse_command_line(ac, av, visibleOpt), vm);
   po::notify(vm);
 
   if (vm.count("help")) {
     std::cout << visibleOpt << std::endl;
-    return EXIT_SUCCESS;
-  }
-
-  if (vm.count("generate")) {
-    auto path{vm["generate"].as<string>()};
-    generateDataSetFiles(path);
     return EXIT_SUCCESS;
   }
 
