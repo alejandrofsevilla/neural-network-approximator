@@ -1,15 +1,8 @@
 #include <opennn/data_set.h>
 #include <opennn/neural_network.h>
-#include <opennn/perceptron_layer.h>
-#include <opennn/scaling_layer.h>
 #include <opennn/training_strategy.h>
 
 #include <boost/program_options.hpp>
-#include <cstdlib>
-#include <fstream>
-
-#include "opennn/bounding_layer.h"
-#include "opennn/loss_index.h"
 
 namespace {
 
@@ -196,11 +189,6 @@ int main(int ac, char* av[]) {
   } else {
     std::cout << visibleOpt << std::endl;
     return EXIT_FAILURE;
-  }
-
-  std::cout << "layersInfo;" << std::endl;
-  for (auto i : layersInfo) {
-    std::cout << i << std::endl;
   }
 
   auto maxEpoch{10000};
