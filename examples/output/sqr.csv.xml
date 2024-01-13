@@ -15,16 +15,16 @@
       <PerceptronLayer>
          <LayerName>perceptron_layer</LayerName>
          <InputsNumber>1</InputsNumber>
-         <NeuronsNumber>9</NeuronsNumber>
+         <NeuronsNumber>10</NeuronsNumber>
          <ActivationFunction>RectifiedLinear</ActivationFunction>
-         <Parameters>-0.0410467 0.883712 0.76358 0.823274 -0.0425525 0.797172 -0.992865 0.923558 -0.0484135 -0.678773 -1.12956 -0.465799 -0.502679 -0.68463 -0.48683 -1.18078 -0.563503 -0.717833</Parameters>
+         <Parameters>0.365706 0.979088 0.715286 0.78938 -0.157828 0.754327 -1.1425 0.897147 -0.641343 0.807418 1.00938 1.01832 0.436781 0.481916 0.975449 0.460531 1.00209 0.547827 0.970601 0.492947</Parameters>
       </PerceptronLayer>
       <PerceptronLayer>
          <LayerName>perceptron_layer</LayerName>
-         <InputsNumber>9</InputsNumber>
+         <InputsNumber>10</InputsNumber>
          <NeuronsNumber>1</NeuronsNumber>
          <ActivationFunction>Linear</ActivationFunction>
-         <Parameters>1.73293 0.876688 1.79354 -1.42288 -1.36327 0.864817 -1.38959 1.53762 -1.28263 0.80924</Parameters>
+         <Parameters>1.8988 1.24289 1.46423 -1.28426 -1.23967 1.17839 -1.25856 1.18707 -1.17256 1.08522 -1.22758</Parameters>
       </PerceptronLayer>
       <UnscalingLayer>
          <UnscalingNeuronsNumber>1</UnscalingNeuronsNumber>
