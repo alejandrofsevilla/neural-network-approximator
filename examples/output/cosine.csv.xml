@@ -1,0 +1,52 @@
+<NeuralNetwork>
+   <Inputs>
+      <InputsNumber>1</InputsNumber>
+      <Input Index="1">x</Input>
+   </Inputs>
+   <Layers>
+      <LayersTypes>Scaling Perceptron Perceptron Unscaling Bounding</LayersTypes>
+      <ScalingLayer>
+         <ScalingNeuronsNumber>1</ScalingNeuronsNumber>
+         <ScalingNeuron Index="1">
+            <Descriptives>-6\5.88\-0.06\3.48138</Descriptives>
+            <Scaler>MeanStandardDeviation</Scaler>
+         </ScalingNeuron>
+      </ScalingLayer>
+      <PerceptronLayer>
+         <LayerName>perceptron_layer</LayerName>
+         <InputsNumber>1</InputsNumber>
+         <NeuronsNumber>6</NeuronsNumber>
+         <ActivationFunction>HyperbolicTangent</ActivationFunction>
+         <Parameters>-2.26868 0.982496 -0.859695 -1.0834 -2.88703 3.49729 1.6749 2.386 0.76912 2.19089 2.19887 2.68246</Parameters>
+      </PerceptronLayer>
+      <PerceptronLayer>
+         <LayerName>perceptron_layer</LayerName>
+         <InputsNumber>6</InputsNumber>
+         <NeuronsNumber>1</NeuronsNumber>
+         <ActivationFunction>Linear</ActivationFunction>
+         <Parameters>1.88534 1.3932 2.54911 -1.36197 -2.48935 1.8902 -1.99886</Parameters>
+      </PerceptronLayer>
+      <UnscalingLayer>
+         <UnscalingNeuronsNumber>1</UnscalingNeuronsNumber>
+         <Descriptives Index="1">
+            <Minimum>-0.999767</Minimum>
+            <Maximum>1</Maximum>
+            <Mean>-0.0465134</Mean>
+            <StandardDeviation>0.693102</StandardDeviation>
+            <Scaler>MeanStandardDeviation</Scaler>
+         </Descriptives>
+      </UnscalingLayer>
+      <BoundingLayer>
+         <BoundingNeuronsNumber>1</BoundingNeuronsNumber>
+         <Item Index="1">
+            <LowerBound>-3.40282e+38</LowerBound>
+            <UpperBound>3.40282e+38</UpperBound>
+         </Item>
+         <UseBoundingLayer>1</UseBoundingLayer>
+      </BoundingLayer>
+   </Layers>
+   <Outputs>
+      <OutputsNumber>1</OutputsNumber>
+      <Output Index="1">cos(x)</Output>
+   </Outputs>
+</NeuralNetwork>

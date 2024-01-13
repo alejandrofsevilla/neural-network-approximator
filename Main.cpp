@@ -9,6 +9,7 @@
 #include <fstream>
 
 #include "opennn/bounding_layer.h"
+#include "opennn/loss_index.h"
 
 namespace {
 
@@ -26,18 +27,24 @@ inline auto makeDataSet(auto function, auto minInput, auto maxInput,
 }
 
 inline auto generateDataSetFiles(auto path) {
-  auto cos{makeDataSet([](auto x) { return std::cos(x); }, -6.f, 6.f, 200)};
+  auto cos{makeDataSet([](auto x) { return std::cos(x); }, -6.f, 6.f, 100)};
   cos->set_data_file_name(path + "/cosine.csv");
   cos->set_column_name(0, "x");
   cos->set_column_name(1, "cos(x)");
   cos->save_data();
-  auto sqrt{makeDataSet([](auto x) { return std::sqrt(x); }, 0.f, 2.f, 200)};
+  auto sqrt{makeDataSet([](auto x) { return std::sqrt(x); }, 0.f, 2.f, 100)};
   sqrt->set_data_file_name(path + "/sqrt.csv");
   sqrt->set_column_name(0, "x");
   sqrt->set_column_name(1, "x^-2");
   sqrt->save_data();
+  auto sqr{
+      makeDataSet([](auto x) { return std::pow(x, 2.f); }, -2.f, 2.f, 100)};
+  sqr->set_data_file_name(path + "/sqr.csv");
+  sqr->set_column_name(0, "x");
+  sqr->set_column_name(1, "x^2");
+  sqr->save_data();
   auto cube{
-      makeDataSet([](auto x) { return std::pow(x, 3.f); }, -2.f, 2.f, 200)};
+      makeDataSet([](auto x) { return std::pow(x, 3.f); }, -2.f, 2.f, 100)};
   cube->set_data_file_name(path + "/cube.csv");
   cube->set_column_name(0, "x");
   cube->set_column_name(1, "x^3");
@@ -89,7 +96,8 @@ inline auto makeNeuralNetwork(auto numberOfInputs, auto numberOfOutputs,
 }
 
 inline auto trainNeuralNetwork(auto& network, auto& dataSet, auto lossGoal,
-                               auto maxEpoch, auto learningRate) {
+                               auto maxEpoch, auto learningRate,
+                               auto regularization, auto regularizationRate) {
   constexpr auto lossMethod{
       opennn::TrainingStrategy::LossMethod::MEAN_SQUARED_ERROR};
   constexpr auto optimizationMethod{
@@ -101,35 +109,40 @@ inline auto trainNeuralNetwork(auto& network, auto& dataSet, auto lossGoal,
   training_strategy.set_loss_goal(lossGoal);
   training_strategy.get_adaptive_moment_estimation_pointer()
       ->set_initial_learning_rate(learningRate);
+  training_strategy.get_loss_index_pointer()->set_regularization_method(
+      regularization);
+  training_strategy.get_loss_index_pointer()->set_regularization_weight(
+      regularizationRate);
   training_strategy.perform_training();
 }
 }  // namespace
 
 int main(int ac, char* av[]) {
   po::options_description configFileOpt{"Config file options"};
-  configFileOpt.add_options()("loss-goal, lg", po::value<float>(),
-                              "set loss goal")(
-      "learning-rate, lr", po::value<float>(), "set learning rate")(
-      "max-epoch, me", po::value<int>(), "set maximum number of epochs")(
-      "layers, l", po::value<vector<string>>()->multitoken(),
-      "set hidden layers info: \n"
-      "ACTIVATION_FUNCTION=[relu, tanh, step, sigmoid, linear]");
+  configFileOpt.add_options()("loss-goal, lg", po::value<float>())(
+      "learning-rate, lr", po::value<float>())("max-epoch, me",
+                                               po::value<int>())(
+      "regularization, r", po::value<string>())("regularization-rate, rr",
+                                                po::value<float>())(
+      "layers, l", po::value<vector<string>>()->multitoken());
 
   po::options_description visibleOpt{
-      "Usage: approximate --data-set [PATH] --output [PATH] --layers "
-      "[[NEURONS_NUMBER ACTIVATION_FUNCTION]...]"};
-  visibleOpt.add_options()("help, h", "show help")(
+      "Usage: neural-network-approximator --config [PATH] --data-set [PATH] "
+      "--output [PATH]"};
+  visibleOpt.add_options()("help, h", "show help.")(
       "config, c", po::value<string>(),
-      "set configuration file with allowed parameters:\n"
+      "set configuration file path.\n"
+      "Available parameters:\n"
       "* learning-rate\n"
       "* loss-goal\n"
       "* max-epoch\n"
+      "* regularization=[None L1 L2]\n"
+      "* regularization-rate\n"
       "* layers=[NUMBER_OF_NEURONS] \n"
-      "* layers=[ACTIVATION_FUNCTION=[relu, tanh, step, "
-      "sigmoid, linear]]...\n"
+      "* layers=[ACTIVATION_FUNCTION=[relu, tanh, step, sigmoid, linear]]\n"
       "* layers=...")("data-set, d", po::value<string>(),
-                      "set data set to approximate")(
-      "output, o", po::value<string>(), "set output file to store prediction");
+                      "set data set file path.")(
+      "output, o", po::value<string>(), "set output files path.");
   po::options_description hiddenOpt{"Hidden options"};
   hiddenOpt.add_options()("generate", po::value<string>(),
                           "generate data-sets [DEST]");
@@ -190,19 +203,38 @@ int main(int ac, char* av[]) {
     std::cout << i << std::endl;
   }
 
-  auto maxEpoch{1.0e4};
+  auto maxEpoch{10000};
   if (vm.count("max-epoch")) {
     maxEpoch = vm["max-epoch"].as<int>();
   }
 
-  auto lossGoal{1.0e-10};
+  auto lossGoal{1.0e-3};
   if (vm.count("loss-goal")) {
     lossGoal = vm["loss-goal"].as<float>();
   }
 
-  auto learningRate{1.0e-2};
+  auto learningRate{0.03};
   if (vm.count("learning-rate")) {
     learningRate = vm["learning-rate"].as<float>();
+  }
+
+  auto regularization{
+      opennn::LossIndex::RegularizationMethod::NoRegularization};
+  if (vm.count("regularization")) {
+    auto reg = vm["regularization"].as<string>();
+    if (reg == "L1") {
+      regularization = opennn::LossIndex::RegularizationMethod::L1;
+    } else if (reg == "L2") {
+      regularization = opennn::LossIndex::RegularizationMethod::L2;
+    } else if (reg != "None") {
+      std::cout << visibleOpt << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+
+  auto regularizationRate{0.f};
+  if (vm.count("regularization-rate")) {
+    regularizationRate = vm["regularization-rate"].as<float>();
   }
 
   auto numberOfInputs{dataSet->get_input_variables_number()};
@@ -210,7 +242,8 @@ int main(int ac, char* av[]) {
   auto network{makeNeuralNetwork(numberOfInputs, numberOfOutputs, layersInfo)};
 
   dataSet->split_samples_random();
-  trainNeuralNetwork(network, dataSet, lossGoal, maxEpoch, learningRate);
+  trainNeuralNetwork(network, dataSet, lossGoal, maxEpoch, learningRate,
+                     regularization, regularizationRate);
   network.save(predictionFile + ".xml");
 
   auto input{dataSet->get_input_data()};
