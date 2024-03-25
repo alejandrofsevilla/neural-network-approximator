@@ -1,7 +1,9 @@
 # ![LinuxWorkflow](https://github.com/alejandrofsevilla/neural-network-approximator/actions/workflows/Linux.yml/badge.svg)
 
 # neural-network-approximator
-Command line application using [OpenNN](https://www.opennn.net/) library to generate neural networks as function approximators from sets of data points.
+Command line application to generate neural networks as function approximators from sets of data points.
+
+This is an application created to experiment with the [OpenNN](https://www.opennn.net/) library for building neural networks and also, [Boost.ProgramOptions](https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html) for parsing program arguments and configuration options.
 
 ## Requirements
 - C++20 compiler.
