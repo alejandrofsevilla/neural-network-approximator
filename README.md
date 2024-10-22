@@ -32,14 +32,14 @@ Usage: neural-network-approximator --config [PATH] --data-set [PATH] --output [P
 ```
 
 ## Examples
-- cos(x) with 1 hidden layer = [6 tanh]:
+### cos(x) with 1 hidden layer = [6 tanh]:
 
 ![cosine](https://github.com/alejandrofsevilla/neural-network-approximator/assets/110661590/cc6d3412-b91f-4a25-aa64-2afd55f2c96a)
 
-- x² with 1 hidden layer = [10 relu]:
+### x² with 1 hidden layer = [10 relu]:
 
 ![sqr](https://github.com/alejandrofsevilla/neural-network-approximator/assets/110661590/89a859f4-00e1-430a-84c7-a6e82ea20638)
 
-- √x with 1 hidden layer = [10 relu]:
+### √x with 1 hidden layer = [10 relu]:
 
 ![sqrt](https://github.com/alejandrofsevilla/neural-network-approximator/assets/110661590/69e16565-9526-4326-a29b-5a24269164c4)
