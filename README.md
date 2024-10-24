@@ -3,7 +3,7 @@
 # neural-network-approximator
 Command line application to generate neural networks as function approximators from sets of data points.
 
-This is an application created to experiment with the [OpenNN](https://www.opennn.net/) library for building neural networks and also, [Boost.ProgramOptions](https://www.boost.org/doc/libs/1_63_0/doc/html/program_options.html) for parsing program arguments and configuration options.
+This is an application created to experiment with the [OpenNN](https://www.opennn.net/) library for building neural networks.
 
 ## Requirements
 - C++20 compiler.
